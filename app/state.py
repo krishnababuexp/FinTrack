@@ -79,6 +79,10 @@ class AppState(rx.State):
         self.current_transaction_type = "Expense"
 
     @rx.event
+    def set_show_transaction_dialog(self, value: bool):
+        self.show_transaction_dialog = value
+
+    @rx.event
     def toggle_budget_dialog(self):
         self.show_budget_dialog = not self.show_budget_dialog
         self.form_error = ""

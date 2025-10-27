@@ -145,9 +145,9 @@ def transaction_form() -> rx.Component:
                     on_submit=AppState.add_transaction,
                     reset_on_submit=True,
                 ),
-                class_name="bg-white p-6 rounded-2xl shadow-xl w-full max-w-lg",
+                class_name="bg-white p-6 rounded-2xl shadow-xl w-full max-w-lg z-50 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
             ),
         ),
         open=AppState.show_transaction_dialog,
-        on_open_change=AppState.toggle_transaction_dialog,
+        on_open_change=AppState.set_show_transaction_dialog,
     )

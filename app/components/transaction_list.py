@@ -65,6 +65,7 @@ def transaction_item(t: Transaction) -> rx.Component:
 
 
 def transaction_list() -> rx.Component:
+    headers = ["Description", "Amount", "Type", "Date", "Actions"]
     return rx.el.div(
         rx.el.div(
             rx.el.h2(
@@ -112,13 +113,14 @@ def transaction_list() -> rx.Component:
             rx.el.table(
                 rx.el.thead(
                     rx.el.tr(
-                        rx.el.th("Description", class_name="text-left"),
-                        rx.el.th("Amount", class_name="text-left"),
-                        rx.el.th("Type", class_name="text-left"),
-                        rx.el.th("Date", class_name="text-left"),
-                        rx.el.th("Actions", class_name="text-left"),
-                        class_name="text-xs text-gray-500 uppercase bg-gray-50",
-                        style={"textAlign": "left", "padding": "1rem 1.5rem"},
+                        rx.foreach(
+                            headers,
+                            lambda header: rx.el.th(
+                                header,
+                                class_name="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+                            ),
+                        ),
+                        class_name="bg-gray-50",
                     )
                 ),
                 rx.el.tbody(
