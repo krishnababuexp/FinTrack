@@ -34,6 +34,7 @@ def header() -> rx.Component:
                 ),
                 class_name="relative ml-4",
             ),
+            class_name="flex items-center",
         ),
         class_name="flex items-center justify-between h-16 border-b bg-white px-4 md:px-6 sticky top-0 z-30",
     )
