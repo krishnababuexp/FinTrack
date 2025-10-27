@@ -97,7 +97,7 @@ def budget_form() -> rx.Component:
                     on_submit=AppState.add_budget,
                     reset_on_submit=True,
                 ),
-                class_name="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md",
+                class_name="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md z-50 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
             ),
         ),
         open=AppState.show_budget_dialog,

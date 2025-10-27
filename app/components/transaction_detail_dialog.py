@@ -130,7 +130,7 @@ def transaction_detail_dialog() -> rx.Component:
                         type="button",
                     )
                 ),
-                class_name="bg-white p-6 rounded-2xl shadow-xl w-full max-w-lg",
+                class_name="bg-white p-6 rounded-2xl shadow-xl w-full max-w-lg z-50 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
             ),
         ),
         open=AppState.show_transaction_detail_dialog,
