@@ -101,7 +101,7 @@ def budget_form() -> rx.Component:
             ),
         ),
         open=AppState.show_budget_dialog,
-        on_open_change=AppState.toggle_budget_dialog,
+        on_open_change=AppState.set_show_budget_dialog,
     )
 
 

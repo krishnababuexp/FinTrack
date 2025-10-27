@@ -131,6 +131,10 @@ class AppState(rx.State):
         self.form_error = ""
 
     @rx.event
+    def set_show_budget_dialog(self, value: bool):
+        self.show_budget_dialog = value
+
+    @rx.event
     def set_transaction_type(self, type: TransactionType):
         """Sets the current transaction type in the form."""
         self.current_transaction_type = type
