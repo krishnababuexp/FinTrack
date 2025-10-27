@@ -664,27 +664,8 @@ class AppState(rx.State):
 
     @rx.var
     def pending_payables(self) -> float:
-        """Calculates money others owe you (Payables + Loans Given)."""
+        """Calculates money you owe others (Payables + Loans Taken)."""
         payables_amount = sum(
-            (
-                t.amount
-                for t in self.transactions
-                if t.type == "Receivables" and t.status == "pending"
-            )
-        )
-        loan_given_amount = sum(
-            (
-                l.principal
-                for l in self.loans
-                if l.type == "Given" and l.status == "Active"
-            )
-        )
-        return payables_amount + loan_given_amount
-
-    @rx.var
-    def pending_receivables(self) -> float:
-        """Calculates money you owe others (Receivables + Loans Taken)."""
-        receivables_amount = sum(
             (
                 t.amount
                 for t in self.transactions
@@ -698,4 +679,23 @@ class AppState(rx.State):
                 if l.type == "Taken" and l.status == "Active"
             )
         )
-        return receivables_amount + loan_taken_amount
+        return payables_amount + loan_taken_amount
+
+    @rx.var
+    def pending_receivables(self) -> float:
+        """Calculates money others owe you (Receivables + Loans Given)."""
+        receivables_amount = sum(
+            (
+                t.amount
+                for t in self.transactions
+                if t.type == "Receivables" and t.status == "pending"
+            )
+        )
+        loan_given_amount = sum(
+            (
+                l.principal
+                for l in self.loans
+                if l.type == "Given" and l.status == "Active"
+            )
+        )
+        return receivables_amount + loan_given_amount
