@@ -5,6 +5,7 @@ from app.components.header import header
 from app.components.stats_cards import stats_cards
 from app.components.transaction_list import transaction_list
 from app.components.transaction_form import transaction_form
+from app.components.transaction_detail_dialog import transaction_detail_dialog
 
 
 def dashboard() -> rx.Component:
@@ -20,5 +21,6 @@ def dashboard() -> rx.Component:
             class_name="flex flex-col flex-1 overflow-hidden",
         ),
         transaction_form(),
+        transaction_detail_dialog(),
         class_name="flex min-h-screen w-full bg-gray-50 font-['Inter']",
     )

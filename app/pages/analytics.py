@@ -3,6 +3,7 @@ from app.state import AppState
 from app.components.sidebar import sidebar
 from app.components.header import header
 from app.components.transaction_form import transaction_form
+from app.components.transaction_detail_dialog import transaction_detail_dialog
 
 TOOLTIP_PROPS = {
     "content_style": {
@@ -115,5 +116,6 @@ def analytics_page() -> rx.Component:
             class_name="flex flex-col flex-1 overflow-hidden",
         ),
         transaction_form(),
+        transaction_detail_dialog(),
         class_name="flex min-h-screen w-full bg-gray-50 font-['Inter']",
     )

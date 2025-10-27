@@ -109,6 +109,11 @@ def transaction_item(t: Transaction) -> rx.Component:
                     None,
                 ),
                 rx.el.button(
+                    rx.icon("eye", class_name="h-4 w-4"),
+                    on_click=lambda: AppState.view_transaction_details(t.id),
+                    class_name="text-gray-400 hover:text-blue-600 ml-2",
+                ),
+                rx.el.button(
                     rx.icon("trash-2", class_name="h-4 w-4"),
                     on_click=lambda: AppState.delete_transaction(t.id),
                     class_name="text-gray-400 hover:text-red-600 ml-2",

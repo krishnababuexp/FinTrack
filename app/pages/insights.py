@@ -3,6 +3,7 @@ from app.state import AppState
 from app.components.sidebar import sidebar
 from app.components.header import header
 from app.components.transaction_form import transaction_form
+from app.components.transaction_detail_dialog import transaction_detail_dialog
 
 
 def insight_card(
@@ -210,5 +211,6 @@ def insights_page() -> rx.Component:
         ),
         transaction_form(),
         insights_dialog(),
+        transaction_detail_dialog(),
         class_name="flex min-h-screen w-full bg-gray-50 font-['Inter']",
     )

@@ -79,6 +79,25 @@ class AppState(rx.State):
     show_budget_dialog: bool = False
     show_insights_dialog: bool = False
     current_insight: dict = {}
+    show_transaction_detail_dialog: bool = False
+    selected_transaction: dict = {}
+
+    @rx.event
+    def view_transaction_details(self, transaction_id: str):
+        tx = next((t for t in self.transactions if t.id == transaction_id), None)
+        if tx:
+            tx_dict = tx.model_dump()
+            if tx.loan_id:
+                loan = next((l for l in self.loans if l.id == tx.loan_id), None)
+                if loan:
+                    tx_dict["loan_details"] = loan.model_dump()
+            self.selected_transaction = tx_dict
+            self.show_transaction_detail_dialog = True
+
+    @rx.event
+    def close_transaction_detail_dialog(self):
+        self.show_transaction_detail_dialog = False
+        self.selected_transaction = {}
 
     @rx.event
     def show_insight_details(self, insight: dict):
@@ -618,7 +637,7 @@ class AppState(rx.State):
     @rx.var
     def total_income(self) -> float:
         """Calculates the total income."""
-        income_types = {"Income", "Loan Taken"}
+        income_types = {"Income"}
         return sum((t.amount for t in self.transactions if t.type in income_types))
 
     @rx.var
@@ -631,7 +650,6 @@ class AppState(rx.State):
             "EMI",
             "Insurance",
             "Bill Payment",
-            "Loan Given",
         }
         return sum((t.amount for t in self.transactions if t.type in expense_types))
 
@@ -642,12 +660,12 @@ class AppState(rx.State):
 
     @rx.var
     def pending_payables(self) -> float:
-        """Calculates the total amount of pending payables."""
+        """Calculates money others owe you (Payables + Loans Given)."""
         payables_amount = sum(
             (
                 t.amount
                 for t in self.transactions
-                if t.type == "Payables" and t.status == "pending"
+                if t.type == "Receivables" and t.status == "pending"
             )
         )
         loan_given_amount = sum(
@@ -661,12 +679,12 @@ class AppState(rx.State):
 
     @rx.var
     def pending_receivables(self) -> float:
-        """Calculates the total amount of pending receivables."""
+        """Calculates money you owe others (Receivables + Loans Taken)."""
         receivables_amount = sum(
             (
                 t.amount
                 for t in self.transactions
-                if t.type == "Receivables" and t.status == "pending"
+                if t.type == "Payables" and t.status == "pending"
             )
         )
         loan_taken_amount = sum(

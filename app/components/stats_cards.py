@@ -13,7 +13,9 @@ def stat_card(
         ),
         rx.el.div(
             rx.el.p(
-                f"${value.to_string()}", class_name=f"text-2xl font-bold {color_class}"
+                f"${value.to_string()}",
+                class_name="text-2xl font-bold",
+                color=color_class,
             ),
             rx.el.p("+20.1% from last month", class_name="text-xs text-gray-500"),
             class_name="mt-2",
