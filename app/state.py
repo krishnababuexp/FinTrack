@@ -618,7 +618,8 @@ class AppState(rx.State):
     @rx.var
     def total_income(self) -> float:
         """Calculates the total income."""
-        return sum((t.amount for t in self.transactions if t.type == "Income"))
+        income_types = {"Income", "Loan Taken"}
+        return sum((t.amount for t in self.transactions if t.type in income_types))
 
     @rx.var
     def total_expenses(self) -> float:
@@ -630,6 +631,7 @@ class AppState(rx.State):
             "EMI",
             "Insurance",
             "Bill Payment",
+            "Loan Given",
         }
         return sum((t.amount for t in self.transactions if t.type in expense_types))
 
@@ -641,21 +643,37 @@ class AppState(rx.State):
     @rx.var
     def pending_payables(self) -> float:
         """Calculates the total amount of pending payables."""
-        return sum(
+        payables_amount = sum(
             (
                 t.amount
                 for t in self.transactions
                 if t.type == "Payables" and t.status == "pending"
             )
         )
+        loan_given_amount = sum(
+            (
+                l.principal
+                for l in self.loans
+                if l.type == "Given" and l.status == "Active"
+            )
+        )
+        return payables_amount + loan_given_amount
 
     @rx.var
     def pending_receivables(self) -> float:
         """Calculates the total amount of pending receivables."""
-        return sum(
+        receivables_amount = sum(
             (
                 t.amount
                 for t in self.transactions
                 if t.type == "Receivables" and t.status == "pending"
             )
         )
+        loan_taken_amount = sum(
+            (
+                l.principal
+                for l in self.loans
+                if l.type == "Taken" and l.status == "Active"
+            )
+        )
+        return receivables_amount + loan_taken_amount

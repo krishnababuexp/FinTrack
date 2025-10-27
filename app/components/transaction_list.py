@@ -167,24 +167,28 @@ def transaction_list() -> rx.Component:
             class_name="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 items-center",
         ),
         rx.el.div(
-            rx.el.table(
-                rx.el.thead(
-                    rx.el.tr(
-                        rx.foreach(
-                            headers,
-                            lambda header: rx.el.th(
-                                header,
-                                class_name="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+            rx.scroll_area(
+                rx.el.table(
+                    rx.el.thead(
+                        rx.el.tr(
+                            rx.foreach(
+                                headers,
+                                lambda header: rx.el.th(
+                                    header,
+                                    class_name="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+                                ),
                             ),
-                        ),
-                        class_name="bg-gray-50",
-                    )
+                            class_name="bg-gray-50",
+                        )
+                    ),
+                    rx.el.tbody(
+                        rx.foreach(AppState.filtered_transactions, transaction_item),
+                        class_name="bg-white divide-y divide-gray-200",
+                    ),
+                    class_name="min-w-full",
                 ),
-                rx.el.tbody(
-                    rx.foreach(AppState.filtered_transactions, transaction_item),
-                    class_name="bg-white divide-y divide-gray-200",
-                ),
-                class_name="min-w-full",
+                type="always",
+                scrollbars="horizontal",
             ),
             rx.cond(
                 AppState.filtered_transactions.length() == 0,
