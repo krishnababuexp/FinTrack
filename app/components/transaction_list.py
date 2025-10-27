@@ -1,5 +1,33 @@
 import reflex as rx
-from app.state import AppState, Transaction
+from app.state import AppState, Transaction, TransactionStatus
+
+
+def status_badge(status: rx.Var[TransactionStatus]) -> rx.Component:
+    return rx.match(
+        status,
+        (
+            "pending",
+            rx.el.span(
+                "Pending",
+                class_name="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800",
+            ),
+        ),
+        (
+            "settled",
+            rx.el.span(
+                "Settled",
+                class_name="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800",
+            ),
+        ),
+        (
+            "received",
+            rx.el.span(
+                "Received",
+                class_name="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800",
+            ),
+        ),
+        rx.el.span("", class_name=""),
+    )
 
 
 def transaction_item(t: Transaction) -> rx.Component:
@@ -13,6 +41,8 @@ def transaction_item(t: Transaction) -> rx.Component:
         "Bill Payment": ("file-text", "bg-purple-100 text-purple-700"),
         "Payables": ("arrow-up-right", "bg-pink-100 text-pink-700"),
         "Receivables": ("arrow-down-left", "bg-teal-100 text-teal-700"),
+        "Loan Taken": ("arrow-down-to-line", "bg-blue-100 text-blue-700"),
+        "Loan Given": ("arrow-up-from-line", "bg-purple-100 text-purple-700"),
     }
     icon, style = icon_map.get(t.type, ("dollar-sign", "bg-gray-100 text-gray-700"))
     return rx.el.tr(
@@ -23,11 +53,16 @@ def transaction_item(t: Transaction) -> rx.Component:
                     class_name=f"p-2 rounded-full {style}",
                 ),
                 rx.el.div(
-                    rx.el.p(t.category, class_name="font-medium text-gray-900"),
                     rx.el.p(
                         t.description,
-                        class_name="text-xs text-gray-500 truncate max-w-xs",
+                        class_name="font-medium text-gray-900 truncate max-w-xs",
                     ),
+                    rx.el.p(t.party, class_name="text-xs text-gray-500"),
+                ),
+                rx.cond(
+                    t.linked_transaction_id != None,
+                    rx.icon("link-2", class_name="h-4 w-4 text-gray-400 ml-2"),
+                    None,
                 ),
                 class_name="flex items-center gap-3",
             ),
@@ -52,11 +87,33 @@ def transaction_item(t: Transaction) -> rx.Component:
             class_name="px-6 py-4",
         ),
         rx.el.td(t.date, class_name="px-6 py-4 text-gray-600"),
+        rx.el.td(status_badge(t.status), class_name="px-6 py-4"),
         rx.el.td(
-            rx.el.button(
-                rx.icon("trash-2", class_name="h-4 w-4"),
-                on_click=lambda: AppState.delete_transaction(t.id),
-                class_name="text-gray-400 hover:text-red-600",
+            rx.el.div(
+                rx.cond(
+                    (t.type == "Payables") & (t.status == "pending"),
+                    rx.el.button(
+                        "Mark Paid",
+                        on_click=lambda: AppState.settle_payable(t.id),
+                        class_name="text-xs text-green-600 hover:underline",
+                    ),
+                    None,
+                ),
+                rx.cond(
+                    (t.type == "Receivables") & (t.status == "pending"),
+                    rx.el.button(
+                        "Mark Received",
+                        on_click=lambda: AppState.settle_receivable(t.id),
+                        class_name="text-xs text-blue-600 hover:underline",
+                    ),
+                    None,
+                ),
+                rx.el.button(
+                    rx.icon("trash-2", class_name="h-4 w-4"),
+                    on_click=lambda: AppState.delete_transaction(t.id),
+                    class_name="text-gray-400 hover:text-red-600 ml-2",
+                ),
+                class_name="flex items-center gap-2",
             ),
             class_name="px-6 py-4",
         ),
@@ -65,7 +122,7 @@ def transaction_item(t: Transaction) -> rx.Component:
 
 
 def transaction_list() -> rx.Component:
-    headers = ["Description", "Amount", "Type", "Date", "Actions"]
+    headers = ["Description", "Amount", "Type", "Date", "Status", "Actions"]
     return rx.el.div(
         rx.el.div(
             rx.el.h2(

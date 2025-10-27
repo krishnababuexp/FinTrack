@@ -88,22 +88,90 @@ def transaction_form() -> rx.Component:
                         ),
                         class_name="flex gap-4",
                     ),
-                    rx.el.div(
-                        rx.el.label(
-                            "Category",
-                            class_name="block text-sm font-medium text-gray-700",
+                    rx.cond(
+                        (AppState.current_transaction_type == "Payables")
+                        | (AppState.current_transaction_type == "Receivables")
+                        | (AppState.current_transaction_type == "Loan Taken")
+                        | (AppState.current_transaction_type == "Loan Given"),
+                        rx.el.div(
+                            rx.el.label(
+                                "Party (Name)",
+                                class_name="block text-sm font-medium text-gray-700",
+                            ),
+                            rx.el.input(
+                                name="party",
+                                placeholder="e.g., John Doe, ACME Inc.",
+                                class_name="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm",
+                            ),
                         ),
-                        rx.el.select(
-                            rx.el.option(
-                                "Select a category...", value="", disabled=True
+                        None,
+                    ),
+                    rx.cond(
+                        (AppState.current_transaction_type == "Loan Taken")
+                        | (AppState.current_transaction_type == "Loan Given"),
+                        rx.el.div(
+                            rx.el.label(
+                                "Interest Rate (%)",
+                                class_name="block text-sm font-medium text-gray-700",
                             ),
-                            rx.foreach(
-                                AppState.categories_for_type,
-                                lambda category: rx.el.option(category, value=category),
+                            rx.el.input(
+                                name="interest_rate",
+                                placeholder="e.g., 5.5",
+                                type="number",
+                                step="0.01",
+                                class_name="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm",
                             ),
-                            name="category",
-                            required=True,
-                            class_name="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm",
+                        ),
+                        None,
+                    ),
+                    rx.cond(
+                        (AppState.current_transaction_type == "Loan Taken")
+                        | (AppState.current_transaction_type == "Loan Given"),
+                        None,
+                        rx.cond(
+                            (AppState.current_transaction_type == "Loan Payment")
+                            | (AppState.current_transaction_type == "Interest Payment"),
+                            rx.el.div(
+                                rx.el.label(
+                                    "Select Loan",
+                                    class_name="block text-sm font-medium text-gray-700",
+                                ),
+                                rx.el.select(
+                                    rx.el.option(
+                                        "Select a loan...", value="", disabled=True
+                                    ),
+                                    rx.foreach(
+                                        AppState.active_loans,
+                                        lambda loan: rx.el.option(
+                                            f"{loan.type} - {loan.party} (${loan.principal})",
+                                            value=loan.id,
+                                        ),
+                                    ),
+                                    name="loan_id",
+                                    required=True,
+                                    class_name="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm",
+                                ),
+                            ),
+                            rx.el.div(
+                                rx.el.label(
+                                    "Category",
+                                    class_name="block text-sm font-medium text-gray-700",
+                                ),
+                                rx.el.select(
+                                    rx.el.option(
+                                        "Select a category...", value="", disabled=True
+                                    ),
+                                    rx.foreach(
+                                        AppState.categories_for_type,
+                                        lambda category: rx.el.option(
+                                            category, value=category
+                                        ),
+                                    ),
+                                    name="category",
+                                    required=True,
+                                    class_name="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm",
+                                ),
+                            ),
                         ),
                     ),
                     rx.el.div(

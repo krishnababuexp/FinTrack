@@ -1,7 +1,7 @@
 # AI-Powered Budget & Expenditure Management App
 
 ## Project Overview
-Build a complete financial management application with AI-powered insights, budget tracking, expense prediction, and comprehensive transaction management.
+Build a complete financial management application with AI-powered insights, budget tracking, expense prediction, and comprehensive transaction management with proper linking for payables, receivables, and loans.
 
 ---
 
@@ -32,9 +32,44 @@ Build a complete financial management application with AI-powered insights, budg
 
 ---
 
+## Phase 4: Advanced Transaction Linking - Payables & Receivables ✅
+- [x] Extend Transaction model to include status field (pending, paid, received, settled)
+- [x] Add linked_transaction_id field to track settlement relationships
+- [x] Create "Mark as Paid" action for pending payables
+- [x] Create "Mark as Received" action for pending receivables
+- [x] Update transaction form to support creating settlement transactions
+- [x] Add visual indicators in transaction list showing linked/settled transactions
+- [x] Add party name field for tracking payables/receivables
+- [x] Implement settlement workflow creating linked expense/income transactions
+
+---
+
+## Phase 5: Loan Management System ✅
+- [x] Create Loan data model (id, type, principal, interest_rate, party, start_date, status)
+- [x] Add loan_id field to Transaction model for linking payments to specific loans
+- [x] Build loan creation interface (Loan Taken, Loan Given)
+- [x] Link "Loan Payment" and "Interest Payment" transactions to specific loans
+- [x] Add loan dashboard page showing all active loans with balances and schedules
+- [x] Implement auto-generated categories for loan-related transactions
+- [x] Add party/lender/borrower tracking with interest rate
+- [x] Create active loans listing in state
+
+---
+
+## Phase 6: Enhanced Cash Flow Tracking
+- [ ] Update cash flow chart to show linked transaction impacts
+- [ ] Add settlement history view showing paid/received transactions
+- [ ] Create loan repayment tracker with principal vs interest breakdown
+- [ ] Build comprehensive transaction detail modal showing all linked relationships
+- [ ] Add filtering by settlement status (pending, settled, partially settled)
+- [ ] Generate reports for outstanding payables, receivables, and loan balances
+
+---
+
 ## Notes
 - Using local storage for data persistence (no backend required)
-- AI predictions will use pattern analysis on transaction history
-- Modern SaaS design with blue primary color and gray secondary
-- Transaction types: income, expense, loan payment, interest payment, EMI, insurance, bills, payables, receivables
-- All phases complete! ✨ The app includes comprehensive financial management with AI-powered insights
+- Transaction linking enables proper double-entry bookkeeping
+- Loan tracking with interest calculation and payment allocation
+- Settlement tracking for payables and receivables
+- Status tracking: pending → paid/received → settled
+- Auto-generated categories for loan transactions ensure data consistency
