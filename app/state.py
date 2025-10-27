@@ -45,10 +45,11 @@ class Loan(BaseModel):
     party: str
     start_date: str
     status: LoanStatus = "Active"
+    payments_made: float = 0.0
 
     @property
     def outstanding_balance(self) -> float:
-        return self.principal
+        return self.principal - self.payments_made
 
 
 class Budget(BaseModel):
@@ -90,7 +91,9 @@ class AppState(rx.State):
             if tx.loan_id:
                 loan = next((l for l in self.loans if l.id == tx.loan_id), None)
                 if loan:
-                    tx_dict["loan_details"] = loan.model_dump()
+                    loan_dump = loan.model_dump()
+                    loan_dump["outstanding_balance"] = loan.outstanding_balance
+                    tx_dict["loan_details"] = loan_dump
             self.selected_transaction = tx_dict
             self.show_transaction_detail_dialog = True
 
@@ -207,12 +210,24 @@ class AppState(rx.State):
             self._save_loans(loans)
             transaction_data["loan_id"] = new_loan.id
             transaction_data["category"] = f"Loan with {party}"
+            transaction_data["status"] = "active"
         elif tx_type in ["Loan Payment", "Interest Payment"]:
             loan = next((l for l in loans if l.id == loan_id), None)
             if loan:
                 transaction_data["category"] = (
-                    f"{tx_type.split(' ')[0]} to {loan.party}"
+                    f"{tx_type.split(' ')[0]} for loan from/to {loan.party}"
                 )
+                transaction_data["description"] = (
+                    form_data.get("description", "")
+                    or f"{tx_type} for loan with {loan.party}"
+                )
+                transaction_data["status"] = "active"
+                if tx_type == "Loan Payment":
+                    loan.payments_made += amount
+                    if loan.outstanding_balance <= 0:
+                        loan.status = "Paid Off"
+                        transaction_data["status"] = "settled"
+                self._save_loans(loans)
         new_transaction = Transaction(**transaction_data)
         transactions.insert(0, new_transaction)
         self._save_transactions(transactions)
@@ -674,7 +689,7 @@ class AppState(rx.State):
         )
         loan_taken_amount = sum(
             (
-                l.principal
+                l.outstanding_balance
                 for l in self.loans
                 if l.type == "Taken" and l.status == "Active"
             )
@@ -693,7 +708,7 @@ class AppState(rx.State):
         )
         loan_given_amount = sum(
             (
-                l.principal
+                l.outstanding_balance
                 for l in self.loans
                 if l.type == "Given" and l.status == "Active"
             )

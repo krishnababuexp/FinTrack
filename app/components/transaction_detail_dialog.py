@@ -120,6 +120,18 @@ def transaction_detail_dialog() -> rx.Component:
                             f"{AppState.selected_transaction['loan_details'].to(dict)['interest_rate'].to(str)}%",
                             "percent",
                         ),
+                        detail_row(
+                            "Status",
+                            AppState.selected_transaction["loan_details"]
+                            .to(dict)["status"]
+                            .to(str),
+                            "shield-check",
+                        ),
+                        detail_row(
+                            "Remaining Balance",
+                            f"${AppState.selected_transaction['loan_details'].to(dict)['outstanding_balance'].to(str)}",
+                            "wallet",
+                        ),
                     ),
                     None,
                 ),
